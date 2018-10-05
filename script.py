@@ -16,9 +16,11 @@ files = ['./downloads/ReiNX-latest.zip',
               './downloads/tinfoil.zip',
               './downloads/ReiNX_Toolkit.nro']
 
+#set up the download directory to avoid downloading dupe files
+dldir = os.path.join(os.getcwd(), 'downloads')
 
 try:
-    os.mkdir('./downloads/')
+    os.mkdir(dldir)
 except FileExistsError:
     pass
 
@@ -26,11 +28,11 @@ except FileExistsError:
 for i, link in enumerate(links):
     #checks to see if the file already exists and downloads if so
     if not Path(files[i]).is_file():
-        filename = wget.download(link, out='./downloads')
+        filename = wget.download(link, out=dldir)
 
 #TODO: Autodetect if they have a SDCard drive and attempt to set the directory
 #      to the drive
-directory = os.getcwd() + '\\sdcard\\'
+directory = os.path.join(os.getcwd(), 'sdcard')
 
 
 # Makes directories and unzips files to the proper locations
@@ -38,25 +40,31 @@ directory = os.getcwd() + '\\sdcard\\'
 zipfile.ZipFile(files[0]).extractall(directory)
 copy(files[1], directory)
 
-try:
-    os.mkdir(directory + 'switch')
-except FileExistsError:
-    print(directory + 'switch' + " directory already exists")
-    
-copy(files[4], directory + 'switch/')
-zipfile.ZipFile(files[3]).extract('tinfoil.nro', directory + 'switch/')
+tmpdir = os.path.join(directory, 'switch')
 
 try:
-    os.mkdir(directory + 'ReiNX/titles')
+    os.mkdir(tmpdir)
 except FileExistsError:
-    print (directory + 'ReiNX/titles' + " directory already exists")
+    print(tmpdir + " directory already exists")
     
-zipfile.ZipFile(files[2]).extractall(directory + 'ReiNX/titles')
+copy(files[4], os.path.join(tmpdir))
+zipfile.ZipFile(files[3]).extract('tinfoil.nro', tmpdir)
+
+tmpdir = os.path.join(directory, 'ReiNx', 'titles')
 
 try:
-    os.makedirs(directory + 'tinfoil/nsp/')
+    os.mkdir(tmpdir)
 except FileExistsError:
-    print (directory + 'tinfoil/nsp/' + " directory already exists")
+    print (tmpdir + " directory already exists")
+    
+zipfile.ZipFile(files[2]).extractall(tmpdir)
+
+tmpdir = os.path.join(directory, 'tinfoil', 'nsp')
+
+try:
+    os.makedirs(tmpdir)
+except FileExistsError:
+    print (tmpdir + " directory already exists")
 
 
 print("Finished setting up ReiNX directories in " + directory)
