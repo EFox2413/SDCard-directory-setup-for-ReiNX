@@ -3,6 +3,8 @@ import zipfile
 from pathlib import Path
 import os
 from shutil import copy
+import tkinter as tk
+from tkinter import filedialog
 
 links = ['http://builds.reinx.guide/nightly/ReiNX-latest.zip',
           'https://reinx.guide/u/hbmenu.nro',
@@ -30,9 +32,13 @@ for i, link in enumerate(links):
     if not Path(files[i]).is_file():
         filename = wget.download(link, out=dldir)
 
-#TODO: Autodetect if they have a SDCard drive and attempt to set the directory
-#      to the drive
-directory = os.path.join(os.getcwd(), 'sdcard')
+#Have the user select the root directory of their SD card
+root = tk.Tk()
+root.withdraw()
+
+directory = filedialog.askdirectory(initialdir="C://",
+                                    title="Select SD card root directory for ReiNX installation",
+                                    parent=root)
 
 
 # Makes directories and unzips files to the proper locations
